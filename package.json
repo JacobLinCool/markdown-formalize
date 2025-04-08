@@ -1,0 +1,75 @@
+{
+    "private": true,
+    "name": "markdown-formalize",
+    "version": "0.1.0",
+    "description": "",
+    "main": "./out/main/index.js",
+    "bin": {
+        "md-formalize": "dist/cli.js"
+    },
+    "scripts": {
+        "dev": "electron-vite dev",
+        "build": "npm run typecheck && electron-vite build",
+        "lint": "eslint --cache .",
+        "typecheck:node": "tsc --noEmit -p tsconfig.node.json --composite false",
+        "svelte-check": "svelte-check --tsconfig ./tsconfig.json",
+        "typecheck": "npm run typecheck:node && npm run svelte-check",
+        "start": "electron-vite preview",
+        "postinstall": "electron-builder install-app-deps",
+        "build:unpack": "npm run build && electron-builder --dir",
+        "build:win": "npm run build && electron-builder --win",
+        "build:mac": "npm run build && electron-builder --mac",
+        "build:linux": "npm run build && electron-builder --linux",
+        "format": "prettier --ignore-path .gitignore --write .",
+        "changeset": "changeset"
+    },
+    "keywords": [],
+    "author": "JacobLinCool <jacoblincool@gmail.com> (https://github.com/JacobLinCool)",
+    "license": "MIT",
+    "packageManager": "pnpm@10.8.0",
+    "devDependencies": {
+        "@changesets/changelog-github": "^0.5.1",
+        "@changesets/cli": "^2.28.1",
+        "@electron-toolkit/eslint-config-prettier": "^3.0.0",
+        "@electron-toolkit/eslint-config-ts": "^3.0.0",
+        "@electron-toolkit/tsconfig": "^1.0.1",
+        "@electron/fuses": "^1.8.0",
+        "@sveltejs/vite-plugin-svelte": "^5.0.3",
+        "@types/debug": "^4.1.12",
+        "@types/express": "^5.0.1",
+        "@types/node": "^22.14.0",
+        "electron": "^35.1.4",
+        "electron-builder": "^25.1.8",
+        "electron-icon-builder": "^2.0.1",
+        "electron-vite": "^3.1.0",
+        "eslint": "^9.24.0",
+        "eslint-plugin-svelte": "^2.46.1",
+        "prettier": "^3.5.3",
+        "prettier-plugin-organize-imports": "^4.1.0",
+        "prettier-plugin-svelte": "^3.3.3",
+        "svelte": "^5.25.8",
+        "svelte-check": "^4.1.5",
+        "tsx": "^4.19.3",
+        "typescript": "^5.8.3",
+        "vite": "^6.2.5"
+    },
+    "dependencies": {
+        "@electron-toolkit/preload": "^3.0.1",
+        "@electron-toolkit/utils": "^4.0.0",
+        "@fontsource-variable/noto-sans-tc": "^5.2.5",
+        "debug": "^4.4.0",
+        "electron-squirrel-startup": "^1.0.1",
+        "express": "^5.1.0",
+        "highlight.js": "^11.11.1",
+        "marked": "^15.0.8",
+        "marked-highlight": "^2.2.1",
+        "mathjax": "^3.2.2",
+        "mermaid": "^11.6.0"
+    },
+    "pnpm": {
+        "onlyBuiltDependencies": [
+            "electron",
+            "esbuild"
+        ]
+    }
+}
