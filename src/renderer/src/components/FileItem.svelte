@@ -5,6 +5,9 @@
     export let status: "processing" | "success" | "error" = "processing";
     export let errors: { type: string; resource: string; error: string }[] = [];
     export let pdfPath: string | null = null;
+    export let showErrors: (
+        error: { type: string; resource: string; error: string }[],
+    ) => void = () => {};
 
     function handleDownload() {
         if (pdfPath) {
@@ -19,54 +22,60 @@
     }
 </script>
 
+<!-- svelte-ignore a11y_no_static_element_interactions -->
+<!-- svelte-ignore a11y_click_events_have_key_events -->
 <div
-    class="flex justify-between p-3 px-4 bg-[var(--ev-c-black-mute)] rounded-lg mb-2.5 max-w-[600px] w-full transition-all duration-300 ease-in-out sm:flex-row flex-col sm:items-center items-start"
-    class:border-l-4={status === "success" || status === "error"}
-    class:border-[#4caf50]={status === "success"}
-    class:border-[#ff5757]={status === "error"}
+    class="card bg-base-200 shadow-sm w-full transition-all duration-300 hover:shadow-md {status ===
+    'error'
+        ? 'border-l-4 border-l-error'
+        : status === 'success'
+          ? 'border-l-4 border-l-success'
+          : ''}"
+    on:click={() => showErrors(errors)}
 >
-    <div class="flex items-center w-full">
-        <div class="mr-3 flex items-center text-[#ff5757] success:text-[#4caf50]">
-            {#if status === "processing"}
-                <Icon icon="lucide:timer" width="20" height="20" />
-            {:else if status === "success"}
-                <Icon icon="lucide:check-circle" width="20" height="20" />
-            {:else}
-                <Icon icon="lucide:alert-circle" width="20" height="20" />
-            {/if}
-        </div>
-        <div
-            class="font-semibold mr-4 whitespace-nowrap overflow-hidden text-ellipsis max-w-[200px]"
-        >
-            {fileName}
-        </div>
-        <div class="text-sm text-[var(--ev-c-text-2)]">
-            {#if status === "processing"}
-                Processing...
-            {:else if status === "success"}
-                Conversion complete
-            {:else}
-                Conversion completed with errors
+    <div class="card-body p-4">
+        <div class="flex items-center justify-between flex-wrap gap-2">
+            <div class="flex items-center gap-2 flex-1 min-w-48">
+                <div class="avatar placeholder">
+                    {#if status === "processing"}
+                        <Icon icon="lucide:timer" class="w-5 h-5" />
+                    {:else if status === "success"}
+                        <Icon icon="lucide:file-check" class="w-5 h-5" />
+                    {:else}
+                        <Icon icon="lucide:alert-triangle" class="w-5 h-5 text-error" />
+                    {/if}
+                </div>
+
+                <div class="flex flex-col items-start">
+                    <span class="font-medium truncate max-w-48">{fileName}</span>
+                    <span class="text-xs opacity-70">
+                        {#if status === "processing"}
+                            <span class="text-info">Processing...</span>
+                        {:else if status === "success"}
+                            <span class="text-success">Conversion complete</span>
+                        {:else}
+                            <span class="text-error">
+                                {errors.length}
+                                {errors.length === 1 ? "error" : "errors"} found
+                            </span>
+                        {/if}
+                    </span>
+                </div>
+            </div>
+
+            {#if status !== "processing" && pdfPath}
+                <div class="flex gap-2 justify-end">
+                    <button class="btn btn-sm btn-primary" on:click={handleDownload}>
+                        <Icon icon="lucide:file" class="w-4 h-4" />
+                        Open PDF
+                    </button>
+
+                    <button class="btn btn-sm btn-outline" on:click={handleShowInFolder}>
+                        <Icon icon="lucide:folder" class="w-4 h-4" />
+                        Show in Folder
+                    </button>
+                </div>
             {/if}
         </div>
     </div>
-
-    {#if status !== "processing" && pdfPath}
-        <div class="flex gap-2 sm:mt-0 mt-3 w-full sm:w-auto justify-end">
-            <button
-                class="flex items-center gap-1.5 bg-[var(--ev-c-gray-3)] text-[var(--ev-c-text-1)] border-none py-1.5 px-3 rounded-md cursor-pointer text-sm font-medium transition-all duration-200 ease-in-out hover:bg-[var(--ev-c-gray-2)]"
-                on:click={handleDownload}
-            >
-                <Icon icon="lucide:external-link" width="16" height="16" />
-                Open PDF
-            </button>
-            <button
-                class="flex items-center gap-1.5 bg-[var(--ev-c-gray-3)] text-[var(--ev-c-text-1)] border-none py-1.5 px-3 rounded-md cursor-pointer text-sm font-medium transition-all duration-200 ease-in-out hover:bg-[var(--ev-c-gray-2)]"
-                on:click={handleShowInFolder}
-            >
-                <Icon icon="lucide:folder" width="16" height="16" />
-                Show in Folder
-            </button>
-        </div>
-    {/if}
 </div>

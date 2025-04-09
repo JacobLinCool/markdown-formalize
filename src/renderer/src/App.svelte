@@ -16,6 +16,8 @@
 
     let processedFiles: ProcessedFile[] = [];
     let selectedErrors: { type: string; resource: string; error: string }[] = [];
+    let theme = "dark"; // Default theme
+    let isDrawerOpen = false; // Add drawer state variable
 
     // Handle file selection/drop
     function handleFiles(event: CustomEvent<{ files: File[] }>) {
@@ -75,17 +77,23 @@
         });
     }
 
-    // Show validation errors when a file is clicked
-    function showErrors(errors: { type: string; resource: string; error: string }[]) {
-        selectedErrors = errors;
-    }
-
     // Generate a unique ID for each file
     function generateId() {
         return Math.random().toString(36).substring(2, 9);
     }
 
+    // Show errors in the side panel
+    function showErrors(errors: { type: string; resource: string; error: string }[]) {
+        selectedErrors = errors;
+        if (errors.length > 0) {
+            isDrawerOpen = true;
+        }
+    }
+
     onMount(() => {
+        // Set initial theme
+        document.documentElement.setAttribute("data-theme", theme);
+
         // Listen for conversion result from the main process
         window.electron.ipcRenderer.on(
             "conversion-result",
@@ -110,76 +118,47 @@
     });
 </script>
 
-<main>
-    <div class="container">
-        <h1>Markdown Formalize</h1>
-        <p class="subtitle">Convert Markdown to beautifully formatted PDF documents</p>
-
-        <FileDropZone on:files={handleFiles} />
-
-        {#if processedFiles.length > 0}
-            <div class="files-list">
-                <h2>Files</h2>
-                {#each processedFiles as file}
-                    <!-- svelte-ignore a11y_click_events_have_key_events -->
-                    <!-- svelte-ignore a11y_no_static_element_interactions -->
-                    <div on:click={() => showErrors(file.errors)}>
-                        <FileItem
-                            fileName={file.name}
-                            status={file.status}
-                            errors={file.errors}
-                            pdfPath={file.pdfPath}
-                        />
-                    </div>
-                {/each}
+<div class="min-h-screen bg-base-100 drawer drawer-end {isDrawerOpen ? 'drawer-open' : ''}">
+    <input id="drawer-right" type="checkbox" class="drawer-toggle" bind:checked={isDrawerOpen} />
+    <div class="drawer-content">
+        <main class="container mx-auto px-4 py-8 max-w-4xl">
+            <div class="text-center mb-8">
+                <h1 class="text-4xl font-bold mb-2">Markdown Formalize</h1>
+                <p class="text-base opacity-70">
+                    Convert Markdown to beautifully formatted PDF documents
+                </p>
             </div>
-        {/if}
 
-        <ValidationErrors errors={selectedErrors} />
+            <FileDropZone on:files={handleFiles} />
+
+            {#if processedFiles.length > 0}
+                <div class="mt-8">
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 class="text-lg font-semibold">Files</h2>
+                        <div class="badge badge-outline">
+                            {processedFiles.length} file{processedFiles.length === 1 ? "" : "s"}
+                        </div>
+                    </div>
+                    <div class="space-y-3">
+                        {#each processedFiles as file}
+                            <FileItem
+                                fileName={file.name}
+                                status={file.status}
+                                errors={file.errors}
+                                pdfPath={file.pdfPath}
+                                {showErrors}
+                            />
+                        {/each}
+                    </div>
+                </div>
+            {/if}
+        </main>
     </div>
-</main>
 
-<style>
-    main {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: flex-start;
-        min-height: 100vh;
-        padding: 40px 20px;
-    }
-
-    .container {
-        max-width: 800px;
-        width: 100%;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-    }
-
-    h1 {
-        font-size: 32px;
-        font-weight: 700;
-        margin-bottom: 10px;
-        text-align: center;
-    }
-
-    .subtitle {
-        font-size: 16px;
-        color: var(--ev-c-text-2);
-        margin-bottom: 30px;
-        text-align: center;
-    }
-
-    .files-list {
-        width: 100%;
-        margin-top: 30px;
-    }
-
-    h2 {
-        font-size: 18px;
-        font-weight: 600;
-        margin-bottom: 16px;
-        color: var(--ev-c-text-1);
-    }
-</style>
+    <div class="drawer-side">
+        <label for="drawer-right" aria-label="close sidebar" class="drawer-overlay"></label>
+        <div class="p-4 w-80 min-h-full bg-base-200 text-base-content">
+            <ValidationErrors errors={selectedErrors} onClose={() => (isDrawerOpen = false)} />
+        </div>
+    </div>
+</div>

@@ -80,6 +80,9 @@ importers:
       "@types/node":
         specifier: ^22.14.0
         version: 22.14.0
+      daisyui:
+        specifier: ^5.0.17
+        version: 5.0.17
       electron:
         specifier: ^35.1.4
         version: 35.1.4
@@ -2744,6 +2747,12 @@ packages:
     resolution:
       {
         integrity: sha512-tvlJLyQf834SylNKax8Wkzco/1ias1OPw8DcUMDE7oUIoSEW25riQVuiu/0OWEFqT0cxHT3Pa9/D82Jr47IONw==,
+      }
+
+  daisyui@5.0.17:
+    resolution:
+      {
+        integrity: sha512-YV5PjYfIxvc6V35WEDn06y9KMpPXGSNgw5mckuV+RwKi0VCZlmGT3fY6gQFTcQDFCcPkJ8TOpEJHDBABI2C/dw==,
       }
 
   dataloader@1.4.0:
@@ -8018,6 +8027,8 @@ snapshots:
     dependencies:
       d3: 7.9.0
       lodash-es: 4.17.21
+
+  daisyui@5.0.17: {}
 
   dataloader@1.4.0: {}
 

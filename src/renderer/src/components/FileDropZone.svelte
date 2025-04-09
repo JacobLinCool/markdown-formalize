@@ -76,10 +76,11 @@
 </script>
 
 <!-- svelte-ignore a11y_no_static_element_interactions -->
-<button
-    class="w-full min-h-60 max-w-[600px] border-2 border-dashed border-[var(--ev-c-gray-1)] rounded-lg flex items-center justify-center cursor-pointer transition-all duration-300 ease-in-out my-5"
-    class:border-[#6988e6]={dragActive}
-    class:bg-[rgba(105,136,230,0.05)]={dragActive}
+<!-- svelte-ignore a11y_click_events_have_key_events -->
+<div
+    class="card bg-base-200 shadow-xl border-2 border-dashed border-base-300 w-full min-h-[15rem] max-w-2xl mx-auto flex items-center justify-center cursor-pointer transition-all duration-300 ease-in-out my-5 hover:border-primary"
+    class:border-primary={dragActive}
+    class:bg-base-300={dragActive}
     on:click={handleButtonClick}
     on:dragenter={handleDragEnter}
     on:dragleave={handleDragLeave}
@@ -95,13 +96,14 @@
         multiple
     />
 
-    <div class="flex flex-col items-center justify-center p-5 text-center">
-        <div class="mb-4 text-[var(--ev-c-gray-1)] active:text-[#6988e6]">
-            <Icon icon="lucide:upload" width="48" height="48" />
+    <div class="card-body items-center text-center">
+        <div class="mb-4 text-opacity-70 text-primary">
+            <Icon icon="lucide:upload-cloud" class="w-16 h-16" />
         </div>
-        <h3 class="text-lg font-semibold mb-2">Drag and drop your Markdown files here</h3>
-        <p class="text-sm text-[var(--ev-c-gray-2)]">
-            or <span class="text-[var(--ev-c-blue-1)]">click to select files</span>
+        <h3 class="card-title text-lg">Drag and drop Markdown files here</h3>
+        <p class="text-sm opacity-70">
+            or <span class="text-primary font-medium">click to select files</span>
         </p>
+        <div class="mt-3 badge badge-outline">Supports .md and .markdown files</div>
     </div>
-</button>
+</div>
