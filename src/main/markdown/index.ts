@@ -1,7 +1,7 @@
 import debug from "debug";
 import { BrowserWindow } from "electron";
 import hljs from "highlight.js";
-import { Marked } from "marked";
+import { Marked, type Token } from "marked";
 import { markedHighlight } from "marked-highlight";
 import { existsSync, rmSync, writeFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
@@ -89,30 +89,51 @@ export class MarkdownFormalizer {
 
     private async validate(markdown: string): Promise<ValidationResult> {
         const errors: ValidationError[] = [];
-        const tokens = this.marked.lexer(markdown);
+        const tokens = this.marked.lexer(markdown, { gfm: true, breaks: true });
 
-        for (const token of tokens) {
-            if (token.type === "link") {
-                const valid = await this.validateLink(token.href);
-                if (!valid) {
-                    errors.push({
-                        type: "link",
-                        resource: token.href,
-                        error: "Link is not accessible",
-                    });
+        const processTokens = async (tokenList: Token[]): Promise<void> => {
+            for (const token of tokenList) {
+                log("Processing token type: %s", token.type);
+
+                if (token.type === "link") {
+                    const valid = await this.validateLink(token.href);
+                    if (!valid) {
+                        errors.push({
+                            type: "link",
+                            resource: token.href,
+                            error: "Link is not accessible",
+                        });
+                    }
+                }
+
+                if (token.type === "image") {
+                    const valid = await this.validateImage(token.href);
+                    if (!valid) {
+                        errors.push({
+                            type: "image",
+                            resource: token.href,
+                            error: "Image is not accessible",
+                        });
+                    }
+                }
+
+                // Recursively process nested tokens
+                if ("tokens" in token && token.tokens) {
+                    await processTokens(token.tokens);
+                }
+
+                // Handle items in lists
+                if ("items" in token && Array.isArray(token.items)) {
+                    for (const item of token.items) {
+                        if (item.tokens && Array.isArray(item.tokens)) {
+                            await processTokens(item.tokens);
+                        }
+                    }
                 }
             }
-            if (token.type === "image") {
-                const valid = await this.validateImage(token.href);
-                if (!valid) {
-                    errors.push({
-                        type: "image",
-                        resource: token.href,
-                        error: "Image is not accessible",
-                    });
-                }
-            }
-        }
+        };
+
+        await processTokens(tokens);
 
         if (errors.length > 0) {
             log("Validation errors found:", errors);
