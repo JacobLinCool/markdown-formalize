@@ -37,6 +37,14 @@ Markdown Formalize is an elegant desktop application that transforms your Markdo
 
 Download the latest version from the [Releases page](https://github.com/jacoblincool/markdown-formalize/releases).
 
+> **Note for macOS Users:** If you encounter security warnings or "app is damaged" messages, run the following command in Terminal to remove the quarantine attribute:
+>
+> ```bash
+> xattr -dr com.apple.quarantine /Applications/markdown-formalize.app
+> ```
+>
+> See [this article](https://disable-gatekeeper.github.io/) for more information.
+
 ### Build from Source
 
 ```bash
