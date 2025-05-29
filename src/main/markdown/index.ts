@@ -205,8 +205,7 @@ export class MarkdownFormalizer {
                 printBackground: true,
                 displayHeaderFooter: true,
                 headerTemplate: "<div></div>",
-                footerTemplate:
-                    '<div style="font-size: 10px; text-align: right; width: 100%; margin: 0 1cm"><span class="pageNumber"></span></div>',
+                footerTemplate: "<div></div>",
             });
             log("PDF generated");
 
